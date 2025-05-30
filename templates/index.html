@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Handwritten Number Recognizer</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <h1>Handwritten Number Recognizer</h1>
+
+  <div id="controls">
+    <button onclick="showCanvas()">Write</button>
+    <button onclick="openCamera()">Take Photo</button>
+  </div>
+
+  <!-- Canvas Container -->
+  <div id="canvas-container">
+    <canvas id="draw-canvas" width="280" height="280"></canvas><br>
+    <button onclick="predictWritten()">Predict</button>
+    <button onclick="clearCanvas()">Clear</button>
+  </div>
+
+  <!-- Camera Container -->
+  <div id="photo-container">
+    <video id="camera" width="280" height="280" autoplay></video><br>
+    <button onclick="predictImage()">Predict</button>
+  </div>
+
+  <!-- Loading and Result -->
+  <div id="loading">Loading...</div>
+  <div id="result">RESULT: None</div>
+
+  <script src="/static/index.js"></script>
+</body>
+</html>

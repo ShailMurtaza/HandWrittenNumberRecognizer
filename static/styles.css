@@ -1,0 +1,40 @@
+body {
+    font-family: Arial;
+    text-align: center;
+    margin: 40px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#canvas-container, #photo-container {
+    display: none;
+    margin-top: 20px;
+}
+
+canvas {
+    border: 1px solid #000;
+    background-color: white;
+    cursor: crosshair;
+}
+
+video {
+    border: 1px solid #000;
+}
+
+#loading {
+    font-weight: bold;
+    color: blue;
+    margin-top: 10px;
+    display: none;
+}
+
+#result {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
