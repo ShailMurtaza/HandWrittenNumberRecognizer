@@ -22,10 +22,6 @@ canvas {
     cursor: crosshair;
 }
 
-video {
-    border: 1px solid #000;
-}
-
 #loading {
     font-weight: bold;
     color: blue;
@@ -36,5 +32,9 @@ video {
 #result {
     font-size: 20px;
     margin-top: 15px;
+}
+
+#photo_preview {
+    max-height: 300px;
 }
 

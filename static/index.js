@@ -1,4 +1,8 @@
+const image_input = document.getElementById("image_input")
+const result_container = document.getElementById('result')
+const loading_container = document.getElementById('loading')
 const canvas = document.getElementById('draw-canvas');
+const photo_preview = document.getElementById("photo_preview")
 const ctx = canvas.getContext('2d');
 let drawing = false;
 
@@ -7,18 +11,10 @@ function showCanvas() {
     document.getElementById('photo-container').style.display = 'none';
 }
 
-function openCamera() {
-    document.getElementById('photo-container').style.display = 'inline-block';
+function selectFile() {
     document.getElementById('canvas-container').style.display = 'none';
-
-    const video = document.getElementById('camera');
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            video.srcObject = stream;
-        })
-        .catch(err => {
-            console.log('Camera access denied or not supported.' + err);
-        });
+    document.getElementById('photo-container').style.display = 'inline-block';
+    image_input.click()
 }
 
 // Canvas Drawing
@@ -55,7 +51,7 @@ function clearCanvas() {
 
 // Predict from canvas
 function predictWritten() {
-    document.getElementById('loading').style.display = 'block';
+    loading_container.style.display = 'block';
 
     // Create a new 28x28 canvas in memory
     const scaledCanvas = document.createElement("canvas");
@@ -83,25 +79,33 @@ function predictWritten() {
     })
         .then(res => res.text())
         .then(data => {
-            document.getElementById('result').textContent = 'RESULT: ' + data;
+            result_container.textContent = 'RESULT: ' + data;
         })
         .catch(() => {
-            document.getElementById('result').textContent = 'RESULT: Error';
+            result_container.textContent = 'RESULT: Error';
         })
         .finally(() => {
-            document.getElementById('loading').style.display = 'none';
+            loading_container.style.display = 'none';
         });
 }
 
 // Predict from camera (dummy simulation)
 function predictImage() {
-    document.getElementById('loading').style.display = 'block';
+    loading_container.style.display = 'block';
 
-    // Simulate delay and fake result
-    setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('result').textContent = 'RESULT: 7 (mocked)';
-    }, 1500);
-
-    // Actual implementation would capture frame from video and send to /predict_image
+    loading_container.style.display = 'none';
 }
+
+
+image_input.addEventListener('change', () => {
+    const files = image_input.files;
+    for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            photo_preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
