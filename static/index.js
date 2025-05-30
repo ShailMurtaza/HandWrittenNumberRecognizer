@@ -10,6 +10,7 @@ const loader = document.getElementById("loader")
 
 const processed_image = document.getElementById("processed_image")
 const result_container = document.getElementById("result_container")
+const confidence_chart = document.getElementById("confidence_chart")
 const modal_close_btn = document.getElementById("close_btn")
 
 const ctx = canvas.getContext('2d');
@@ -40,6 +41,25 @@ canvas.addEventListener('mouseout', () => {
     ctx.beginPath();
 });
 canvas.addEventListener('mousemove', draw);
+
+// Touch support
+canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    drawing = true;
+    draw(e.touches[0]);
+});
+canvas.addEventListener('touchend', () => {
+    drawing = false;
+    ctx.beginPath();
+});
+canvas.addEventListener('touchcancel', () => {
+    drawing = false;
+    ctx.beginPath();
+});
+canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    draw(e.touches[0]);
+});
 
 function draw(e) {
     if (!drawing) return;
@@ -89,9 +109,7 @@ function predictWritten() {
     })
         .then(res => res.json())
         .then(data => {
-            result_container.textContent = 'RESULT: ' + data.result;
-            const base64Image = data.image;
-            processed_image.src = 'data:image/png;base64,' + base64Image;
+            display_results(data)
         })
         .catch(() => {
             result_container.textContent = 'RESULT: Error';
@@ -121,9 +139,7 @@ function predictImage() {
     })
         .then(res => res.json())
         .then(data => {
-            result_container.textContent = 'RESULT: ' + data.result;
-            const base64Image = data.image;
-            processed_image.src = 'data:image/png;base64,' + base64Image
+            display_results(data)
         })
         .catch(err => console.error("Error:", err))
         .finally(() => {
@@ -152,6 +168,7 @@ function closeModal() {
     processed_image.style.display = "none"
     result_container.style.display = "none"
     modal_close_btn.style.display = "none"
+    confidence_chart.style.display = "none"
 }
 
 function openModal() {
@@ -172,3 +189,51 @@ function openResults() {
     modal_close_btn.style.display = "block"
 }
 
+function openChart() {
+    confidence_chart.style.display = "block"
+}
+
+
+function display_results(data) {
+    const confidence = data.result
+    var max_confidence = 0
+    var confidence_html = ''
+    for(let i=0;i<confidence.length;i++) {
+        let confidence_percentage = (confidence[i] * 100).toFixed(3)
+        confidence_html += `<div class="confidence_values">${i}<div class="bar" data-value="${confidence_percentage}">${confidence_percentage}%</div></div>`
+        if (confidence[i] > confidence[max_confidence]) max_confidence = i 
+    }
+    confidence_chart.innerHTML = confidence_html
+    map_bar_colors()
+
+    result_container.textContent = 'RESULT: ' + max_confidence;
+    const base64Image = data.image;
+    processed_image.src = 'data:image/png;base64,' + base64Image;
+    openChart()
+}
+
+function map_bar_colors() {
+    const bars = document.querySelectorAll(".bar");
+
+    // Get min/max for normalization
+    const values = [...bars].map(bar => +bar.dataset.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+
+    function mapValueToColor(val, min, max) {
+        // Normalize value to 0–1
+        const t = (val - min) / (max - min);
+
+        // Example: interpolate from blue (low) to red (high)
+        const r = Math.round(255 * t);
+        const g = Math.round(100 * (1 - t)); // optional green fade
+        const b = Math.round(255 * (1 - t));
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    bars.forEach(bar => {
+        const val = +bar.dataset.value;
+        bar.style.width = `${val}%`; // Use value for width
+        bar.style.background = mapValueToColor(val, min, max); // Color by width
+    });
+}

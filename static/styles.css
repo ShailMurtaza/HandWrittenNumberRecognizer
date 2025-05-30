@@ -58,6 +58,7 @@ canvas {
 #processed_image {
     image-rendering: pixelated;
     width: 300px;
+    box-shadow: 0 0 5px 5px black;
 }
 
 #result_container {
@@ -82,3 +83,26 @@ canvas {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+#confidence_chart {
+    display: none;
+    width: 100%;
+}
+
+.confidence_values {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+
+.bar {
+    height: 20px;
+    border-radius: 4px;
+    transition: background 0.3s;
+    margin-left: 10px;
+    text-align: center;
+    color: black;
+}
+

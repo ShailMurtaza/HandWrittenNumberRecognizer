@@ -22,8 +22,7 @@ def predict_number(image):
     image = image.reshape(1, 28, 28, 1)
     input_image = image.reshape(1, 28, 28, 1)
     prediction = model.predict(input_image)
-    predicted_label = np.argmax(prediction)
-    return predicted_label
+    return prediction[0]
 
 @app.route("/predict_written", methods=["POST"])
 def predict_written():
@@ -32,9 +31,9 @@ def predict_written():
         image = data["image"]
         img_array = np.array(image, dtype=np.float32)
         img_array /= 255.0
-        predicted_label = predict_number(img_array)
+        confidence = predict_number(img_array)
         img_str = get_image(img_array)
-        return jsonify({"result": str(predicted_label), "image": img_str})
+        return jsonify({"result": confidence.tolist(), "image": img_str})
     else:
         print("None from request")
         return "ERROR!"
@@ -46,9 +45,9 @@ def predict_image():
 
     img_cleaned = clean_image(file)
     img_array = img_cleaned.astype(np.float32) / 255.0
-    predicted_label = predict_number(img_array)
+    confidence = predict_number(img_array)
     img_str = get_image(img_array)
-    return jsonify({"result": str(predicted_label), "image": img_str})
+    return jsonify({"result": confidence.tolist(), "image": img_str})
 
 
 def get_image(image_array):
