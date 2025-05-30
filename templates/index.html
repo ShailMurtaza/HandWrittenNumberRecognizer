@@ -13,7 +13,7 @@
         <input style="display: none;" id="image_input" style="" type="file" accept="image/*">
         <div id="controls">
             <button onclick="showCanvas()">Write</button>
-            <button onclick="selectFile()">Take Photo</button>
+            <button onclick="selectFile()">Select Image</button>
         </div>
 
         <!-- Canvas Container -->
@@ -34,7 +34,7 @@
         <div id="modal-overlay">
             <div id="modal">
                 <div id="loader"></div>
-                <img id="processed_image" src="/static/cleaned.jpg" width="300" style="image-rendering: pixelated;">
+                <img id="processed_image" width="300" style="image-rendering: pixelated;">
                 <div id="result_container" style="margin-top: 10px;"></div>
                 <button id="close_btn" style="width: 100%;" onclick="closeModal()">OK!</button>
             </div>

@@ -104,6 +104,32 @@ function predictWritten() {
 
 // Predict from camera
 function predictImage() {
+    if (image_input.files.length === 0) {
+        alert("Please select an image.");
+        return;
+    }
+    openModal()
+    openLoader()
+
+    const file = image_input.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/predict_image', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            result_container.textContent = 'RESULT: ' + data.result;
+            const base64Image = data.image;
+            processed_image.src = 'data:image/png;base64,' + base64Image
+        })
+        .catch(err => console.error("Error:", err))
+        .finally(() => {
+            closeLoader()
+            openResults()
+        });
 }
 
 

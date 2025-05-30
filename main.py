@@ -18,22 +18,48 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
+def predict_number(image):
+    image = image.reshape(1, 28, 28, 1)
+    input_image = image.reshape(1, 28, 28, 1)
+    prediction = model.predict(input_image)
+    predicted_label = np.argmax(prediction)
+    return predicted_label
 
 @app.route("/predict_written", methods=["POST"])
 def predict_written():
     data = request.json
     if data:
         image = data["image"]
-        image_array = np.array(image, dtype=np.float32)
-        image_array /= 255.0
-        input_image = image_array.reshape(1, 28, 28, 1)
-        prediction = model.predict(input_image)
-        predicted_label = np.argmax(prediction)
-        img_str = get_image(image_array)
+        img_array = np.array(image, dtype=np.float32)
+        img_array /= 255.0
+        predicted_label = predict_number(img_array)
+        img_str = get_image(img_array)
         return jsonify({"result": str(predicted_label), "image": img_str})
     else:
         print("None from request")
         return "ERROR!"
+
+
+@app.route("/predict_image", methods=["POST"])
+def predict_image():
+    file = request.files['image']
+    file_bytes = np.frombuffer(file.read(), np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+    img = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
+    denoised = cv2.fastNlMeansDenoising(img, h=10)
+    img_thresh = cv2.adaptiveThreshold(
+        denoised,
+        maxValue=255,
+        adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,  # or cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+        thresholdType=cv2.THRESH_BINARY_INV,
+        blockSize=11,
+        C=5
+    )
+
+    img_array = img_thresh.astype(np.float32) / 255.0
+    predicted_label = predict_number(img_array)
+    img_str = get_image(img_array)
+    return jsonify({"result": str(predicted_label), "image": img_str})
 
 
 def get_image(image_array):
