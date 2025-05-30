@@ -42,6 +42,25 @@ canvas.addEventListener('mouseout', () => {
 });
 canvas.addEventListener('mousemove', draw);
 
+// Touch support
+canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    drawing = true;
+    draw(e.touches[0]);
+});
+canvas.addEventListener('touchend', () => {
+    drawing = false;
+    ctx.beginPath();
+});
+canvas.addEventListener('touchcancel', () => {
+    drawing = false;
+    ctx.beginPath();
+});
+canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    draw(e.touches[0]);
+});
+
 function draw(e) {
     if (!drawing) return;
     const rect = canvas.getBoundingClientRect();
@@ -90,11 +109,7 @@ function predictWritten() {
     })
         .then(res => res.json())
         .then(data => {
-            const confidence = data.result
-            const max_confidence = display_confidence(confidence)
-            result_container.textContent = 'RESULT: ' + max_confidence;
-            const base64Image = data.image;
-            processed_image.src = 'data:image/png;base64,' + base64Image;
+            display_results(data)
         })
         .catch(() => {
             result_container.textContent = 'RESULT: Error';
@@ -124,11 +139,7 @@ function predictImage() {
     })
         .then(res => res.json())
         .then(data => {
-            const confidence = data.result
-            const max_confidence = display_confidence(confidence)
-            result_container.textContent = 'RESULT: ' + max_confidence;
-            const base64Image = data.image;
-            processed_image.src = 'data:image/png;base64,' + base64Image;
+            display_results(data)
         })
         .catch(err => console.error("Error:", err))
         .finally(() => {
@@ -157,6 +168,7 @@ function closeModal() {
     processed_image.style.display = "none"
     result_container.style.display = "none"
     modal_close_btn.style.display = "none"
+    confidence_chart.style.display = "none"
 }
 
 function openModal() {
@@ -177,9 +189,14 @@ function openResults() {
     modal_close_btn.style.display = "block"
 }
 
+function openChart() {
+    confidence_chart.style.display = "block"
+}
 
-function display_confidence(confidence) {
-    var max_confidence = 0;
+
+function display_results(data) {
+    const confidence = data.result
+    var max_confidence = 0
     var confidence_html = ''
     for(let i=0;i<confidence.length;i++) {
         let confidence_percentage = (confidence[i] * 100).toFixed(3)
@@ -188,7 +205,11 @@ function display_confidence(confidence) {
     }
     confidence_chart.innerHTML = confidence_html
     map_bar_colors()
-    return max_confidence
+
+    result_container.textContent = 'RESULT: ' + max_confidence;
+    const base64Image = data.image;
+    processed_image.src = 'data:image/png;base64,' + base64Image;
+    openChart()
 }
 
 function map_bar_colors() {

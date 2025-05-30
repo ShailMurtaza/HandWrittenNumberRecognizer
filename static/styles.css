@@ -83,6 +83,7 @@ canvas {
 }
 
 #confidence_chart {
+    display: none;
     width: 100%;
 }
 
