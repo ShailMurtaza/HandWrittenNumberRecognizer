@@ -22,19 +22,51 @@ canvas {
     cursor: crosshair;
 }
 
-#loading {
-    font-weight: bold;
-    color: blue;
-    margin-top: 10px;
-    display: none;
-}
-
-#result {
-    font-size: 20px;
-    margin-top: 15px;
-}
-
 #photo_preview {
     max-height: 300px;
 }
 
+#modal-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+#modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+}
+
+#result_container, #processed_image, #close_btn {
+    display: none;
+}
+
+#loader {
+    display: none;
+    width: 80px;
+    height: 80px;
+    border: 8px solid transparent;
+    border-top: 8px solid #00e6e6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0 0 15px #00e6e6;
+}
+
+@keyframes spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -1,8 +1,14 @@
 const image_input = document.getElementById("image_input")
-const result_container = document.getElementById('result')
-const loading_container = document.getElementById('loading')
 const canvas = document.getElementById('draw-canvas');
 const photo_preview = document.getElementById("photo_preview")
+
+const modal_overlay = document.getElementById("modal-overlay")
+const loader = document.getElementById("loader")
+
+const processed_image = document.getElementById("processed_image")
+const result_container = document.getElementById("result_container")
+const modal_close_btn = document.getElementById("close_btn")
+
 const ctx = canvas.getContext('2d');
 let drawing = false;
 
@@ -51,7 +57,8 @@ function clearCanvas() {
 
 // Predict from canvas
 function predictWritten() {
-    loading_container.style.display = 'block';
+    openModal()
+    openLoader()
 
     // Create a new 28x28 canvas in memory
     const scaledCanvas = document.createElement("canvas");
@@ -85,15 +92,13 @@ function predictWritten() {
             result_container.textContent = 'RESULT: Error';
         })
         .finally(() => {
-            loading_container.style.display = 'none';
+            closeLoader()
+            openResults()
         });
 }
 
-// Predict from camera (dummy simulation)
+// Predict from camera
 function predictImage() {
-    loading_container.style.display = 'block';
-
-    loading_container.style.display = 'none';
 }
 
 
@@ -109,3 +114,30 @@ image_input.addEventListener('change', () => {
         reader.readAsDataURL(file);
     }
 });
+
+function closeModal() {
+    loader.style.display = "none"
+    modal_overlay.style.display = "none"
+    processed_image.style.display = "none"
+    result_container.style.display = "none"
+    modal_close_btn.style.display = "none"
+}
+
+function openModal() {
+    modal_overlay.style.display = "flex"
+}
+
+function openLoader() {
+    loader.style.display = "block"
+}
+
+function closeLoader() {
+    loader.style.display = "none"
+}
+
+function openResults() {
+    processed_image.style.display = "block"
+    result_container.style.display = "block"
+    modal_close_btn.style.display = "block"
+}
+
