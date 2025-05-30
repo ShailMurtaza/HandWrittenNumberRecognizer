@@ -43,20 +43,9 @@ def predict_written():
 @app.route("/predict_image", methods=["POST"])
 def predict_image():
     file = request.files['image']
-    file_bytes = np.frombuffer(file.read(), np.uint8)
-    img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
-    denoised = cv2.fastNlMeansDenoising(img, h=10)
-    img_thresh = cv2.adaptiveThreshold(
-        denoised,
-        maxValue=255,
-        adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,  # or cv2.ADAPTIVE_THRESH_GAUSSIAN_C
-        thresholdType=cv2.THRESH_BINARY_INV,
-        blockSize=11,
-        C=5
-    )
 
-    img_array = img_thresh.astype(np.float32) / 255.0
+    img_cleaned = clean_image_2(file)
+    img_array = img_cleaned.astype(np.float32) / 255.0
     predicted_label = predict_number(img_array)
     img_str = get_image(img_array)
     return jsonify({"result": str(predicted_label), "image": img_str})
@@ -70,6 +59,22 @@ def get_image(image_array):
 
     img_str = base64.b64encode(buffer).decode()
     return img_str
+
+
+def clean_image(file):
+    file_bytes = np.frombuffer(file.read(), np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+    img = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
+    denoised = cv2.fastNlMeansDenoising(img, h=10)
+    img_thresh = cv2.adaptiveThreshold(
+        denoised,
+        maxValue=255,
+        adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,  # or cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+        thresholdType=cv2.THRESH_BINARY_INV,
+        blockSize=11,
+        C=5
+    )
+    return img_thresh
 
 
 app.run(host="0.0.0.0", port=5000, debug=True)
