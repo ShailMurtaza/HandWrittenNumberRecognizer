@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import base64
-from PIL import Image
-from io import BytesIO
 import numpy as np
 import cv2
 import tensorflow as tf
 import os
 import logging
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -38,14 +37,12 @@ def predict_written():
 
 
 def get_image(image_array):
-    image_array *= 255.0
-    image_array = image_array.astype(np.uint8)
-    pil_img = Image.fromarray(image_array, mode='L')  # 'L' for grayscale
+    image_array = (image_array * 255.0).astype(np.uint8)
+    success, buffer = cv2.imencode('.png', image_array)
+    if not success:
+        raise ValueError("Image encoding failed.")
 
-    # Save image to a buffer
-    buffer = BytesIO()
-    pil_img.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode()
+    img_str = base64.b64encode(buffer).decode()
     return img_str
 
 
