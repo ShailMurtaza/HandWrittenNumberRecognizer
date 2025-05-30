@@ -1,3 +1,6 @@
+const canvas_container = document.getElementById('canvas-container')
+const photo_container = document.getElementById('photo-container')
+
 const image_input = document.getElementById("image_input")
 const canvas = document.getElementById('draw-canvas');
 const photo_preview = document.getElementById("photo_preview")
@@ -13,13 +16,13 @@ const ctx = canvas.getContext('2d');
 let drawing = false;
 
 function showCanvas() {
-    document.getElementById('canvas-container').style.display = 'inline-block';
-    document.getElementById('photo-container').style.display = 'none';
+    canvas_container.style.display = 'block';
+    photo_container.style.display = 'none';
 }
 
 function selectFile() {
-    document.getElementById('canvas-container').style.display = 'none';
-    document.getElementById('photo-container').style.display = 'inline-block';
+    canvas_container.style.display = 'none';
+    photo_container.style.display = 'block';
     image_input.click()
 }
 
@@ -84,9 +87,11 @@ function predictWritten() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: gray })
     })
-        .then(res => res.text())
+        .then(res => res.json())
         .then(data => {
-            result_container.textContent = 'RESULT: ' + data;
+            result_container.textContent = 'RESULT: ' + data.result;
+            const base64Image = data.image;
+            processed_image.src = 'data:image/png;base64,' + base64Image;
         })
         .catch(() => {
             result_container.textContent = 'RESULT: Error';
