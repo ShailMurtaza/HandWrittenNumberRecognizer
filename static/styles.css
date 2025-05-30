@@ -55,6 +55,17 @@ canvas {
     display: none;
 }
 
+#processed_image {
+    box-shadow: 0 0 5px 5px black;
+}
+
+#result_container {
+    margin-top: 10px;
+    border: 2px solid blue;
+    padding: 0 5px;
+    border-radius: 10px;
+}
+
 #loader {
     display: none;
     width: 80px;
@@ -70,3 +81,25 @@ canvas {
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+#confidence_chart {
+    width: 100%;
+}
+
+.confidence_values {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+
+.bar {
+    height: 20px;
+    border-radius: 4px;
+    transition: background 0.3s;
+    margin-left: 10px;
+    text-align: center;
+    color: black;
+}
+
