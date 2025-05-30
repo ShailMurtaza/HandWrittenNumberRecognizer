@@ -55,6 +55,18 @@ canvas {
     display: none;
 }
 
+#processed_image {
+    image-rendering: pixelated;
+    width: 300px;
+}
+
+#result_container {
+    margin-top: 10px;
+    border: 2px solid blue;
+    padding: 0 5px;
+    border-radius: 10px;
+}
+
 #loader {
     display: none;
     width: 80px;
