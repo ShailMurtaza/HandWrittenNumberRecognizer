@@ -44,7 +44,7 @@ def predict_written():
 def predict_image():
     file = request.files['image']
 
-    img_cleaned = clean_image_2(file)
+    img_cleaned = clean_image(file)
     img_array = img_cleaned.astype(np.float32) / 255.0
     predicted_label = predict_number(img_array)
     img_str = get_image(img_array)
