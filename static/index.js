@@ -56,27 +56,40 @@ function clearCanvas() {
 // Predict from canvas
 function predictWritten() {
     document.getElementById('loading').style.display = 'block';
-    const imageData = ctx.getImageData(0, 0, 28, 28).data; // Shrink logic should go here if needed
+
+    // Create a new 28x28 canvas in memory
+    const scaledCanvas = document.createElement("canvas");
+    scaledCanvas.width = 28;
+    scaledCanvas.height = 28;
+    const scaledCtx = scaledCanvas.getContext("2d");
+    scaledCtx.drawImage(canvas, 0, 0, 28, 28);
+
+    const imageData = scaledCtx.getImageData(0, 0, 28, 28).data;
     const gray = [];
+    var arr = []
 
     for (let i = 0; i < imageData.length; i += 4) {
-        gray.push(imageData[i]); // just using red as grayscale
+        arr.push(imageData[i+3]);
+        if (arr.length % 28 == 0) {
+            gray.push(arr)
+            arr = []
+        }
     }
 
-    // Dummy API request
     fetch('/predict_written', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: gray })
     })
-        .then(res => res.json())
+        .then(res => res.text())
         .then(data => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('result').textContent = 'RESULT: ' + data.digit;
+            document.getElementById('result').textContent = 'RESULT: ' + data;
         })
         .catch(() => {
-            document.getElementById('loading').style.display = 'none';
             document.getElementById('result').textContent = 'RESULT: Error';
+        })
+        .finally(() => {
+            document.getElementById('loading').style.display = 'none';
         });
 }
 
