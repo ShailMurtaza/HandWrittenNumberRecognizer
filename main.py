@@ -20,8 +20,7 @@ def index():
 
 def predict_number(image):
     image = image.reshape(1, 28, 28, 1)
-    input_image = image.reshape(1, 28, 28, 1)
-    prediction = model.predict(input_image)
+    prediction = model.predict(image)
     return prediction[0]
 
 @app.route("/predict_written", methods=["POST"])
@@ -31,7 +30,6 @@ def predict_written():
         image = data["image"]
         img_array = np.array(image, dtype=np.float32)
         img_array /= 255.0
-        img_array = img_array.reshape(1, 28, 28, 1)
         confidence = predict_number(img_array)
         img_str = get_image(img_array)
         return jsonify({"result": confidence.tolist(), "image": img_str})
