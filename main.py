@@ -31,6 +31,7 @@ def predict_written():
         image = data["image"]
         img_array = np.array(image, dtype=np.float32)
         img_array /= 255.0
+        img_array = img_array.reshape(1, 28, 28, 1)
         confidence = predict_number(img_array)
         img_str = get_image(img_array)
         return jsonify({"result": confidence.tolist(), "image": img_str})
@@ -68,7 +69,7 @@ def clean_image(file):
     img_thresh = cv2.adaptiveThreshold(
         denoised,
         maxValue=255,
-        adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,  # or cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+        adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C,
         thresholdType=cv2.THRESH_BINARY_INV,
         blockSize=11,
         C=5
